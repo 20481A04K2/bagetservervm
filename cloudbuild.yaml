@@ -27,8 +27,8 @@ steps:
     args:
       - -c
       - |
-        VM_EXISTS=$(gcloud compute instances list --filter="name=('baget-vm')" --zones=asia-south1-c --format="value(name)")
-        if [ -z "$VM_EXISTS" ]; then
+        VM_EXISTS=$$(gcloud compute instances list --filter="name=('baget-vm')" --zones=asia-south1-c --format="value(name)")
+        if [ -z "$$VM_EXISTS" ]; then
           echo "Creating VM baget-vm..."
           gcloud compute instances create baget-vm \
             --zone=asia-south1-c \
@@ -40,7 +40,7 @@ steps:
             --metadata=startup-script='#!/bin/bash
               sudo apt-get update
               sudo apt-get install -y docker.io
-              sudo usermod -aG docker $USER
+              sudo usermod -aG docker $$USER
               newgrp docker'
         else
           echo "VM already exists, skipping creation."
