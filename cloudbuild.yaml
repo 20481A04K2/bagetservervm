@@ -1,5 +1,6 @@
 steps:
 
+
   # Step 3: Create VM if not exists
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'Create BaGet VM'
@@ -41,6 +42,7 @@ steps:
   # Step 5: SSH into VM, build BaGet Docker image and run container
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'Run BaGet in VM'
+    secretEnv: ['BAGET_API_KEY']
     entrypoint: bash
     args:
       - -c
@@ -54,7 +56,7 @@ steps:
             -e ASPNETCORE_ENVIRONMENT=Production \
             -e BAGET__Storage__Type=GoogleCloudStorage \
             -e BAGET__Storage__GoogleCloudStorage__Bucket=my-dotnet-packages1 \
-            -e BAGET__ApiKey="$$BAGET_API_KEY" \
+            -e BAGET__ApiKey="'"$$BAGET_API_KEY"'" \
             -e GOOGLE_APPLICATION_CREDENTIALS=/app/baget-key.json \
             -v /home/$(whoami)/baget/baget-key.json:/app/baget-key.json \
             baget-server
