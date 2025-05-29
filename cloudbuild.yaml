@@ -35,7 +35,7 @@ steps:
       - |
         mkdir temp-baget
         cp Dockerfile temp-baget/
-        echo "$$GCP_SA_KEY_JSON" > temp-baget/baget-key.json
+        echo "$$GOOGLE_APPLICATION_CREDENTIALS_CONTENT" > temp-baget/baget-key.json
         gcloud compute scp --recurse temp-baget baget-vm:~/baget --zone=asia-south1-c
 
   # Step 5: SSH into VM, build BaGet Docker image and run container
@@ -54,7 +54,7 @@ steps:
             -e ASPNETCORE_ENVIRONMENT=Production \
             -e BAGET__Storage__Type=GoogleCloudStorage \
             -e BAGET__Storage__GoogleCloudStorage__Bucket=my-dotnet-packages1 \
-            -e BAGET_API_KEY=my-secret-api-key \
+            -e BAGET__ApiKey="$$BAGET_API_KEY" \
             -e GOOGLE_APPLICATION_CREDENTIALS=/app/baget-key.json \
             -v /home/$(whoami)/baget/baget-key.json:/app/baget-key.json \
             baget-server
@@ -62,8 +62,13 @@ steps:
 
 availableSecrets:
   secretManager:
-    - versionName: projects/onyx-antler-459216-j6/secrets/GCP_SA_KEY/versions/latest
-      env: GCP_SA_KEY_JSON
+    - versionName: projects/onyx-antler-459216-j6/secrets/baget-api-key/versions/latest
+      env: BAGET_API_KEY
+
+substitutions:
+  _REGION: asia-south1
+  _ZONE: asia-south1-c
+  _VM_NAME: baget-vm
 
 options:
   logging: CLOUD_LOGGING_ONLY
